@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Товары</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/products.js"></script>
+</head>
+<body>
+    <a href="./index.html">Назад</a>
+    <h2>Список товаров</h2>
+    <img style="display:none;" id="productImage" />
+    <form id="productInfo" action="/api/Product" method="post" enctype="multipart/form-data">
+        <p>
+            Фотография:<br />
+            <input name="Image" type="file" />
+        </p>
+        <p>
+            Название:<br />
+            <input name="name" />
+        </p>
+        <p>
+            Описание:<br />
+            <textarea name="description"></textarea>
+        </p>
+        <p>
+            Цена:<br />
+            <input name="price" type="number" />
+        </p>
+        <p>
+            Категория:<br />
+            <select name="categoryId">
+                <option>Выберите категорию</option>
+            </select>
+        </p>
+        <p>
+            <input type="submit" value="Сохранить" />
+            <button type="reset" style="display: none;">Перейти к добавлению</button>
+        </p>
+    </form>
+    <table>
+        <thead><tr><th>Название</th><th></th><th></th></tr></thead>
+        <tbody>
+        </tbody>
+    </table>
+</body>
+</html>
