@@ -1,11 +1,4 @@
 ﻿$(document).ready(function () {
-    $("#addFieldBtn").click(function (e) {
-        e.preventDefault();
-        let paragraph = $("<p><input name='additionalFieldsNames' />&nbsp;&nbsp;<button>Удалить</button></p>");
-        $(paragraph).find('button').click(function () { $(paragraph).remove(); });
-        $("#categoryInfo p:last").before(paragraph);
-    });
-
     $("#productInfo").on("submit", function (e) {
         e.preventDefault();
 
@@ -34,17 +27,18 @@
         $('#productImage').css('display', 'none');
         $('#productInfo button[type=reset]').css('display', 'none');
         $('#productInfo button[type=reset]').css('display', 'none');
-        $('#productInfo input[type=submit]').css('display', 'block');        
-        $("p:has(>[name^='additionalFieldsValues'])").remove();
-    });    
+        $('#productInfo input[type=submit]').css('display', 'block');
+        $("div:has(>[name^='additionalFieldsValues'])").remove();
+    });
 
     function clearInputs() {
         $('#productInfo').trigger('reset');
         $('#productImage').css('display', 'none');
+        $("div:has(>[name^='additionalFieldsValues'])").remove();
     }
 
     function fillDropdown() {
-        let dropdown = $('[name=categoryId]');
+        let dropdown = $('[name^=categoryId]');
         $.ajax({
             url: "/api/Category",
             type: "get",
@@ -59,11 +53,32 @@
 
     $('[name=categoryId]').change(function () {
         let selectedValue = $(this).val();
-        $("p:has(>[name^='additionalFieldsValues'])").remove();
+        $("div:has(>[name^='additionalFieldsValues'])").remove();
         if (selectedValue) {
             getAdditionalFields();
         }
     });
+
+    $('[name=categoryIdFilter]').change(function () {
+        let selectedValue = $(this).val();
+        $("#additionalFieldsFiltersArea").html("");
+        if (selectedValue) {
+            getAdditionalFieldsFilters(selectedValue);
+        }
+    });
+    function getAdditionalFieldsFilters(selectedCategoryId) {
+        $.ajax({
+            url: "/api/Category/" + selectedCategoryId,
+            type: "get",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $(data.additionalFields).each(function (index, val) {
+                    let el = $(`<div class='form-group col col-md-3'><label>${val.name}</label><input class='form-control' name='additionalFieldValuesFilter[${val.id}]' /></div>`);
+                    $("#additionalFieldsFiltersArea").append(el);
+                });
+            }
+        });
+    }
 
     function getAdditionalFields(callback) {
         let selectedCategoryId = $('[name=categoryId]').val();
@@ -73,8 +88,8 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 $(data.additionalFields).each(function (index, val) {
-                    let paragraph = $(`<p>${val.name}<br/><input additional-field-id='${val.id}' name='additionalFieldsValues[${val.id}]' /></p>`);
-                    $("#productInfo p:last").before(paragraph);
+                    let el = $(`<div class='form-group'><label>${val.name}</label><input class='form-control' additional-field-id='${val.id}' name='additionalFieldsValues[${val.id}]' /></div>`);
+                    $("#productInfo input[type=submit]").before(el);
                     callback && callback();
                 });
             }
@@ -100,19 +115,23 @@
         $('#productImage').css('display', 'block');
         $('#productInfo input[type=submit]').css('display', 'none');
         $("#productInfo button[type=reset]").css('display', 'block');
-        $("p:has(>[name^='additionalFieldsValues'])").remove();
+        $("div:has(>[name^='additionalFieldsValues'])").remove();
         getAdditionalFields(function () { fillAdditionalFieldsValues(product.productAdditionalFieldValues) });
     }
 
+    $("#searchBtn").click(getProducts);
+
     function getProducts() {
+        let data = $("#searchForm").serialize();
         $("tbody").html("");
         $.ajax({
             url: "/api/Product",
             type: "get",
+            data: data,
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 $(data).each(function (index, val) {
-                    let tr = $(`<tr><td>${val['name']}</td><td><button class='viewBtn'>Просмотр</button></td><td><button class='removeBtn'>Удалить</button></td></tr>`);
+                    let tr = $(`<tr><td>${val['name']}</td><td>${val['description']}</td><td>${val['price']}</td><td>${val.category.name}</td><td><button class='btn btn-primary viewBtn'>Просмотр</button>&nbsp;&nbsp;<button class='btn btn-danger removeBtn'>Удалить</button></td></tr>`);
                     $(tr).find("button.removeBtn").click(function () {
                         $.ajax({
                             url: "/api/Product/" + val['id'],

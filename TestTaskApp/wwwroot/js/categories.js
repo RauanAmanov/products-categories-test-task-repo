@@ -1,9 +1,9 @@
 ﻿$(document).ready(function () {
     $("#addFieldBtn").click(function (e) {
         e.preventDefault();
-        let paragraph = $("<p><input name='additionalFieldsNames' />&nbsp;&nbsp;<button>Удалить</button></p>");
+        let paragraph = $("<div class='form-group mb-3 row'><div class='col col-md-5'><input class='form-control' name='additionalFieldsNames' placeholder='Введите название доп.поля' /></div><div class='col col-md-3'><button class='btn btn-danger'>Удалить</button></div>");
         $(paragraph).find('button').click(function () { $(paragraph).remove(); });
-        $("#categoryInfo p:last").before(paragraph);
+        $("#addFieldBtn").before(paragraph);
     });
 
     $("#categoryInfo").on("submit", function (e) {
@@ -15,7 +15,7 @@
             data: $(this).serialize(),
             success: function () {
                 $('[name=name]').val('');
-                $("p:has(>[name=additionalFieldsNames])").remove();
+                $("div.form-group:has(div:has(>[name=additionalFieldsNames]))").remove();
                 alert('Added successfully');
                 getCategories();
             },
@@ -35,7 +35,7 @@
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 $(data).each(function (index, val) {
-                    let tr = $(`<tr><td>${val['name']}</td><td><button>Удалить</button></td></tr>`);
+                    let tr = $(`<tr><td>${val['name']}</td><td><button class='btn btn-danger'>Удалить</button></td></tr>`);
                     $(tr).find("button").click(function () {
                         $.ajax({
                             url: "/api/Category/" + val['id'],

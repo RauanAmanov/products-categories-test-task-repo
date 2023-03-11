@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using TestTaskApp.Models;
 
 namespace TestTaskApp.Controllers
@@ -18,9 +19,25 @@ namespace TestTaskApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> Get([FromQuery] ProductParameters productParameters)
         {
-            return Ok(await _context.Products.Include(x => x.ProductAdditionalFieldValues).ToListAsync());
+            IQueryable<Product> products = _context.Products.Include(x => x.Category).Include(x => x.ProductAdditionalFieldValues);
+
+            if (productParameters.CategoryIdFilter.HasValue)
+                products = products.Where(x => x.CategoryId == productParameters.CategoryIdFilter.Value);
+
+            if (productParameters.AdditionalFieldValuesFilter != null)
+            {
+                foreach (var addFieldValueFilter in productParameters.AdditionalFieldValuesFilter)
+                {
+                    if (!string.IsNullOrWhiteSpace(addFieldValueFilter.Value))
+                        products = products.Where(x => x.ProductAdditionalFieldValues.Any(e => e.AdditionalFieldId == addFieldValueFilter.Key &&
+                        !string.IsNullOrWhiteSpace(e.Value) &&
+                        e.Value.ToLower().Contains(addFieldValueFilter.Value.ToLower())));
+                }
+            }
+
+            return Ok(await products.ToListAsync());
         }
 
         [HttpGet]

@@ -3,45 +3,60 @@
 <head>
     <meta charset="utf-8" />
     <title>Товары</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script type="text/javascript" src="./js/products.js"></script>
 </head>
 <body>
-    <a href="./index.html">Назад</a>
-    <h2>Список товаров</h2>
-    <img style="display:none;" id="productImage" />
-    <form id="productInfo" action="/api/Product" method="post" enctype="multipart/form-data">
-        <p>
-            Фотография:<br />
-            <input name="Image" type="file" />
-        </p>
-        <p>
-            Название:<br />
-            <input name="name" />
-        </p>
-        <p>
-            Описание:<br />
-            <textarea name="description"></textarea>
-        </p>
-        <p>
-            Цена:<br />
-            <input name="price" type="number" />
-        </p>
-        <p>
-            Категория:<br />
-            <select name="categoryId">
-                <option>Выберите категорию</option>
-            </select>
-        </p>
-        <p>
-            <input type="submit" value="Сохранить" />
-            <button type="reset" style="display: none;">Перейти к добавлению</button>
-        </p>
-    </form>
-    <table>
-        <thead><tr><th>Название</th><th></th><th></th></tr></thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div class="container mt-3">
+        <a href="./index.html">Назад</a>
+        <h2>Информация о товаре</h2>
+        <img style="display:none;" id="productImage" width="150" />
+        <form id="productInfo" action="/api/Product" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image">Фотография:</label>
+                <input type="file" class="form-control-file" id="image" name="image">
+            </div>                
+            <div class="form-group">
+                <label for="name">Название:</label>
+                <input id="name" name="name" class="form-control" placeholder="Введите название" />
+            </div>
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" class="form-control" placeholder="Введите описание"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Цена:</label>
+                <input id="price" name="price" type="number" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="categoryId">Категория:</label>
+                <select id="categoryId" name="categoryId" class="form-select">
+                    <option>Выберите категорию</option>
+                </select>
+            </div>
+            <input type="submit" class="btn btn-success mt-3" value="Сохранить" />
+            <button type="reset" class="btn btn-primary mt-3" style="display: none;">Перейти к добавлению</button>
+        </form>
+        <hr />
+        <h2>Список товаров</h2>
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="categoryIdFilter">Фильтр по категории:</label>
+                <select id="categoryIdFilter" name="categoryIdFilter" class="form-select">
+                    <option value="">Выберите категорию</option>
+                </select>
+            </div>
+            <h5>Фильтр по доп. полям</h5>
+            <div class="row" id="additionalFieldsFiltersArea">
+            </div>
+        </form>
+        <button id="searchBtn" class="btn btn-primary mb-3 mt-3">Поиск</button>
+        <table class="table table-bordered">
+            <thead><tr><th>Название</th><th>Описание</th><th>Цена</th><th>Категория</th><th>Действия</th></tr></thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
